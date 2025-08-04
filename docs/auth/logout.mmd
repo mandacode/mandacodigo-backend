@@ -1,0 +1,14 @@
+%%{init: {'theme':'dark'}}%%
+
+sequenceDiagram
+    actor User
+    participant FE as Frontend
+    participant BE as Backend
+    participant DB as Database
+
+    User ->> FE: Clicks logout button
+    FE ->> BE: Sends request: POST /auth/logout/
+    BE ->> DB: Deletes refresh token
+    BE -->> FE: Success
+    FE ->> FE: Deletes refresh token from localStorage
+    FE -->> User: Redirects user to login page

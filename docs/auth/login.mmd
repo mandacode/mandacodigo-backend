@@ -1,4 +1,4 @@
-%%{init: {'theme':'base'}}%%
+%%{init: {'theme':'dark'}}%%
 
 sequenceDiagram
     actor User
@@ -7,12 +7,12 @@ sequenceDiagram
     participant DB as Database
 
     User ->> FE: Submits login form
-    FE ->> BE: Sends request: POST /auth/token/
+    FE ->> BE: Sends request: POST /auth/login/
     BE ->> DB: Validates user data
 
     alt User data is valid
         DB -->> BE: success
-        BE ->> BE: creates JWT access and refresh tokens
+        BE ->> BE: creates JWT token pair
         BE -->> FE: sends access token in response, refresh token as httpOnly cookie
         FE -->> FE: stores access token in localStorage
         FE -->> User: Redirects to dashboard
