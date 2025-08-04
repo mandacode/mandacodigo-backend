@@ -1,0 +1,19 @@
+sequenceDiagram
+    actor User
+    participant FE as Frontend
+    participant BE as Backend
+    participant DB as Database
+
+    User ->> FE: Submits register form
+    FE ->> BE: Sends request: POST /users/
+    BE ->> BE: Validates username and password
+
+    alt User data is valid
+        BE ->> DB: Creates user
+        DB -->> BE: success
+        BE -->> FE: User created
+        FE -->> User: Redirects to login page
+    else User data is invalid
+        BE -->> FE: Sends validation error
+        FE -->> User: Displays validation errors
+    end

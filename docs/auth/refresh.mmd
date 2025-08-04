@@ -1,0 +1,19 @@
+sequenceDiagram
+    participant FE as Frontend
+    participant BE as Backend
+    participant DB as Database
+
+    FE ->> BE: sends a request to private endpoint
+    BE -->> FE: returns 401
+    FE ->> BE: sends refresh request POST /auth/refresh/
+    BE ->> BE: validates refresh token
+
+    alt refresh token is expired or expired
+        BE ->> DB: deletes refresh token
+        BE -->> FE: returns 401
+    else refresh token is valid
+        BE ->> DB: deletes refresh token (blacklisting)
+        BE ->> BE: creates new token pair
+        BE ->> DB: saves new refresh token
+        BE -->> FE: returns refresh token in httpOnly and access token in response
+    end

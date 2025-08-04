@@ -1,0 +1,21 @@
+sequenceDiagram
+    actor User
+    participant FE as Frontend
+    participant BE as Backend
+    participant DB as Database
+
+    User ->> FE: Submits login form
+    FE ->> BE: Sends request: POST /auth/token/
+    BE ->> DB: Validates user data
+
+    alt User data is valid
+        DB -->> BE: success
+        BE ->> BE: creates JWT access and refresh tokens
+        BE -->> FE: sends access token in response, refresh token as httpOnly cookie
+        FE -->> FE: stores access token in localStorage
+        FE -->> User: Redirects to dashboard
+    else User data is invalid
+        DB -->> BE: failure
+        BE -->> FE: Sends validation error
+        FE -->> User: Displays validation errors
+    end
