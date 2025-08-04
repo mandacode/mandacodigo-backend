@@ -1,21 +1,21 @@
-%%{init: {'theme':'base'}}%%
+%%{init: {'theme':'dark'}}%%
 
 sequenceDiagram
     participant FE as Frontend
     participant BE as Backend
     participant DB as Database
 
-    FE ->> BE: sends a request to private endpoint
-    BE -->> FE: returns 401
-    FE ->> BE: sends refresh request POST /auth/refresh/
-    BE ->> BE: validates refresh token
+    FE ->> BE: Sends a request to private endpoint
+    BE -->> FE: Returns 401
+    FE ->> BE: Sends refresh request POST /auth/refresh/
+    BE ->> BE: Validates refresh token
 
-    alt refresh token is expired or expired
-        BE ->> DB: deletes refresh token
-        BE -->> FE: returns 401
-    else refresh token is valid
-        BE ->> DB: deletes refresh token (blacklisting)
-        BE ->> BE: creates new token pair
-        BE ->> DB: saves new refresh token
-        BE -->> FE: returns refresh token in httpOnly and access token in response
+    alt Refresh token is expired or just invalid
+        BE ->> DB: Deletes refresh token
+        BE -->> FE: Returns 401
+    else Refresh token is valid
+        BE ->> DB: Deletes refresh token (blacklisting)
+        BE ->> BE: Creates new token pair
+        BE ->> DB: Saves new refresh token
+        BE -->> FE: Returns refresh token in httpOnly and access token in response
     end
