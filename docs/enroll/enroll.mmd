@@ -1,0 +1,45 @@
+%%{init: {'theme':'dark'}}%%
+
+sequenceDiagram
+    actor User 
+    participant FE as Frontend 
+    participant BE as Backend
+    participant DB as Database 
+    participant Stripe 
+    
+    User ->> FE: Clicks enroll to a course
+    FE ->> BE: Sends request POST /courses/:course_id/enroll/
+    BE ->> BE: Validates data
+    BE ->> DB: Check course availability & user eligibility
+    DB -->> BE: Course & user data
+    
+    alt Course available and user eligible
+        BE ->> Stripe: Create payment intent
+        Stripe -->> BE: Returns client_secret & payment_intent_id
+        BE -->> FE: Returns payment details (client_secret)
+        
+        FE ->> FE: Initialize Stripe payment form
+        User ->> FE: Enters payment details
+        FE ->> Stripe: Confirm payment (client-side)
+        Stripe -->> FE: Payment confirmation
+        
+        FE ->> BE: POST /payments/confirm with payment_intent_id
+        BE ->> Stripe: Verify payment status
+        Stripe -->> BE: Payment confirmed
+        
+        BE ->> DB: Create enrollment record
+        DB -->> BE: Enrollment saved
+        
+        BE -->> FE: Success response with enrollment details
+        FE -->> User: Show enrollment success message
+        
+    else Course unavailable or user ineligible
+        BE -->> FE: Error response
+        FE -->> User: Show error message
+        
+    else Payment failed
+        Stripe -->> FE: Payment error
+        FE ->> BE: POST /payments/failed
+        BE ->> DB: Log failed payment attempt
+        FE -->> User: Show payment error message
+    end
